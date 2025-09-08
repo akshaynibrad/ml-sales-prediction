@@ -1,0 +1,37 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo-akshay/cloud-run-app:$SHORT_SHA',
+        '.'
+      ]
+    id: 'Build Docker image'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo-akshay/cloud-run-app:$SHORT_SHA'
+      ]
+    id: 'Push to Artifact Registry'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      [
+        'run', 'deploy', 'cloud-run-app-akshay',
+        '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo-akshay/cloud-run-app:$SHORT_SHA',
+        '--region', 'us-central1',
+        '--platform', 'managed',
+        '--allow-unauthenticated',
+        '--set-env-vars', 'VERSION=$SHORT_SHA'
+      ]
+    id: 'Deploy to Cloud Run'
+
+options:
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+
+substitutions:
+  _SERVICE_NAME: cloud-run-app
+
