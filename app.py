@@ -28,7 +28,7 @@ FORM_HTML = """
 
 @app.route('/', methods=['GET'])
 def home():
-    return jsonify({'message': 'Sales Prediction API is running on version 2'})
+    return jsonify({'message': 'Sales Prediction API is running on version 3'})
 
 
 @app.route('/predict', methods=['GET', 'POST'])
